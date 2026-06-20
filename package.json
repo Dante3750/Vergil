@@ -1,0 +1,23 @@
+{
+  "name": "dante-coc-bot",
+  "version": "3.0.0",
+  "description": "Dante CoC Discord Bot — Full Control Edition",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "live": "node index.js --keepalive",
+    "setup": "node index.js --setup",
+    "setup-live": "node index.js --setup --keepalive",
+    "nuke": "node index.js --nuke --keepalive",
+    "roles": "node index.js --roles",
+    "channels": "node index.js --channels",
+    "messages": "node index.js --messages",
+    "guides": "node index.js --guides"
+  },
+  "keywords": [],
+  "author": "Dante CoC",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.26.4"
+  }
+}
