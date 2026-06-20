@@ -8,9 +8,11 @@ const { wipeServer } = require('./setup/wipe');
 const { rebuildRoles } = require('./setup/roles');
 const { rebuildChannels } = require('./setup/channels');
 const { repostMessages } = require('./setup/messages');
+const { postPanels } = require('./setup/panels');
 const { repostGuides } = require('./setup/guides');
 const { handleJoin } = require('./events/onJoin');
 const { handleLeave } = require('./events/onLeave');
+const { handleComponentInteraction } = require('./interactions/components');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -45,6 +47,7 @@ async function start() {
     const roles = await rebuildRoles(guild, config);
     const channels = await rebuildChannels(guild, config, roles);
     await repostMessages(guild, config, channels);
+    await postPanels(guild);
     await repostGuides(guild, config, channels);
     console.log('\n' + '═'.repeat(60));
     console.log('✅  FULL SETUP COMPLETE! Bot is live.');
@@ -83,6 +86,16 @@ async function start() {
       channelIds,
       ChannelType,
       helpers: { runFullSetup },
+    });
+  });
+
+  client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.inGuild()) return;
+    await handleComponentInteraction(interaction, config).catch((error) => {
+      console.error('Interaction error:', error.message);
+      if (!interaction.replied && !interaction.deferred) {
+        interaction.reply({ content: '⚠️ That control failed to update. Try again.', ephemeral: true }).catch(() => {});
+      }
     });
   });
 
@@ -126,6 +139,7 @@ async function start() {
 
     if (doMessages) {
       await repostMessages(guild, config);
+      await postPanels(guild);
       console.log('\n✅ Messages reposted. Bot now live.');
       return;
     }
@@ -195,6 +209,7 @@ async function start() {
       }
 
       await repostMessages(guild, config);
+      await postPanels(guild);
 
       for (const channelName of ['📋-rules', '👋-welcome']) {
         const channel = guild.channels.cache.find((item) => item.name === channelName);

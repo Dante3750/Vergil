@@ -18,14 +18,14 @@ async function repostMessages(guild, config, channelMap) {
   for (const [key, channel] of Object.entries(channelMap)) ids[key] = channel?.id;
 
   console.log('\n📜 Posting channel messages...');
-  for (const { channelKey, content } of buildMessages(ids, config)) {
+  for (const { channelKey, content, payload } of buildMessages(ids, config)) {
     const channel = channelMap[channelKey];
     if (!channel) continue;
 
     try {
       const existing = await channel.messages.fetch({ limit: 3 });
       if (existing.size === 0) {
-        await channel.send(content);
+        await channel.send(payload || content);
         console.log(`  ✅ Posted in #${channel.name}`);
       } else {
         console.log(`  ↩️  #${channel.name} already has content`);
