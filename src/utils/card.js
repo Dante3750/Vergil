@@ -3,10 +3,13 @@
 const { EmbedBuilder } = require('discord.js');
 
 function card(title, description, color, fields = [], footer) {
-  const embed = new EmbedBuilder().setTitle(title).setDescription(description).setColor(color);
+  const embed = new EmbedBuilder().setTitle(title).setColor(color);
+  if (typeof description === 'string' && description.trim()) {
+    embed.setDescription(description);
+  }
   for (const field of fields) embed.addFields(field);
   if (footer) embed.setFooter({ text: footer });
-  return { embeds: [embed] };
+  return embed;
 }
 
 function infoCard(title, description, maybeColorOrFields = [], maybeFields, maybeFooter) {

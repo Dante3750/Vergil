@@ -13,8 +13,7 @@ const { repostGuides } = require('./setup/guides');
 const { handleJoin } = require('./events/onJoin');
 const { handleLeave } = require('./events/onLeave');
 const { handleComponentInteraction } = require('./interactions/components');
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const { runStartupChecks } = require('./setup/startup');
 
 async function start() {
   if (!config.BOT_TOKEN || !config.GUILD_ID) {
@@ -156,78 +155,11 @@ async function start() {
       return;
     }
 
-    console.log('🚀 Running startup checks...\n');
-    try {
-      await guild.members.fetch();
-      let stripped = 0;
-      let deleted = 0;
-      let given = 0;
-
-      for (const [, member] of guild.members.cache) {
-        if (member.user.bot) continue;
-        for (const [, role] of member.roles.cache) {
-          if (role.name === '@everyone' || keepRoleNames.includes(role.name)) continue;
-          try {
-            await member.roles.remove(role);
-            stripped += 1;
-            await sleep(300);
-          } catch {}
-        }
-      }
-      if (stripped) console.log(`✅ Stripped ${stripped} old roles.`);
-
-      const allRoles = await guild.roles.fetch();
-      for (const [, role] of allRoles) {
-        if (role.managed || role.name === '@everyone' || keepRoleNames.includes(role.name)) continue;
-        try {
-          await role.delete();
-          deleted += 1;
-          await sleep(400);
-        } catch {}
-      }
-      if (deleted) console.log(`✅ Deleted ${deleted} old role definitions.`);
-
-      const recruitRole = guild.roles.cache.find((role) => role.name === '🛡️ Recruit');
-      if (recruitRole) {
-        for (const [, member] of guild.members.cache) {
-          if (member.user.bot) continue;
-          if (!member.roles.cache.some((role) => keepRoleNames.includes(role.name) && role.name !== '@everyone')) {
-            await member.roles.add(recruitRole);
-            given += 1;
-            await sleep(300);
-          }
-        }
-      }
-      if (given) console.log(`✅ Gave Recruit to ${given} members.`);
-
-      for (const name of ['💬-general-chat', '😂-memes', '📸-media', '👋-introductions']) {
-        const channel = guild.channels.cache.find((item) => item.name === name);
-        if (channel) {
-          await channel.setRateLimitPerUser(5).catch(() => {});
-          await sleep(300);
-        }
-      }
-
-      await repostMessages(guild, config);
-      await postPanels(guild);
-
-      for (const channelName of ['📋-rules', '👋-welcome']) {
-        const channel = guild.channels.cache.find((item) => item.name === channelName);
-        if (channel) {
-          const messages = await channel.messages.fetch({ limit: 5 });
-          const first = messages.last();
-          if (first && !first.pinned) await first.pin().catch(() => {});
-          await sleep(400);
-        }
-      }
-
-      console.log('\n' + '═'.repeat(50));
-      console.log('🐉 DANTE COC BOT IS LIVE!');
-      console.log('═'.repeat(50));
-      console.log('\n✅ Cleanup done | ✅ Guides checked | ✅ Commands ready | 🟢 Running\n');
-    } catch (error) {
-      console.error('\n❌ Startup error:', error.message, error);
-    }
+    await runStartupChecks(guild, config, {
+      keepRoleNames,
+      repostMessages,
+      postPanels,
+    });
   });
 
   client.login(config.BOT_TOKEN);

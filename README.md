@@ -1,24 +1,57 @@
-# Vergil
+# 🐉 Vergil (Dante CoC Bot)
 
-Vergil is a modular Discord bot for the Dante CoC server.
+Vergil is a comprehensive, modular Discord bot designed for the **Dante CoC** community. It provides full-scale server management, automated setup, and community engagement features.
 
-## Setup
+## 🚀 Features
 
-1. Copy `.env.example` to `.env` and fill in your token and server ID.
-2. Run `npm install`.
-3. Start with `npm start` or `node index.js`.
+- **Automated Server Setup**: Fully scriptable server reconstruction including categories, channels, and roles.
+- **Role Management**: Complex role hierarchy and permission systems tailored for Clash of Clans communities.
+- **Engagement Systems**: 
+    - **XP System**: Track member activity and level up with file-based persistence.
+    - **Keepalive**: Multi-process monitoring to ensure 24/7 uptime.
+- **Staff Utilities**: Advanced tools for moderation, including server "nuke" and rebuild capabilities.
+- **Modular Architecture**: Easy to extend with new commands, events, and systems.
 
-## Structure
+## 🛠️ Getting Started
 
-- `.env` holds local secrets.
-- `config.js` loads environment values plus the shared role and channel layout.
-- `messages.js` and `guides.js` hold post content.
-- `src/commands/` contains grouped command handlers.
-- `src/setup/` contains server rebuild helpers.
-- `src/events/` contains join and leave handlers.
-- `src/systems/` contains shared runtime systems like keepalive and XP.
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v16.x or higher)
+- A Discord Bot Token (via [Discord Developer Portal](https://discord.com/developers/applications))
 
-## Notes
+### Installation
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
+2. Set up your environment:
+   - Copy `.env.example` to `.env`.
+   - Fill in your `BOT_TOKEN`, `GUILD_ID`, and other settings.
 
-- `dante-bot.js` is kept as a compatibility wrapper.
-- `index.js` is the main entry point.
+### Running the Bot
+- **Standard Start**: `npm start`
+- **Keepalive Mode**: `npm run live` (auto-restarts on crash)
+
+## ⚡ Administrative Scripts
+
+Vergil uses powerful scripts for server maintenance:
+
+| Command | Description |
+|---------|-------------|
+| `npm run setup` | Full server reconstruction (Roles + Channels + Messages) |
+| `npm run live` | Start with keepalive enabled (Recommended for 24/7) |
+| `npm run nuke` | **WARNING**: Wipes all channels/roles before a fresh setup |
+| `npm run roles` | Rebuilds and syncs server roles from config |
+| `npm run channels` | Rebuilds and syncs channel structure |
+| `npm run messages` | Posts standard messages to designated channels |
+| `npm run guides` | Posts bot setup guides to staff channels |
+
+## 📂 Project Structure
+
+- `src/commands/`: Command handlers (General, Staff, Giveaway, Nuke).
+- `src/events/`: Discord event listeners (Join/Leave).
+- `src/systems/`: Core logic like XP and Keepalive.
+- `src/setup/`: Logic for server reconstruction, wiping, and initialization.
+- `config.js`: Central configuration for roles and permissions.
+
+---
+*Created for the Dante CoC Community.*
